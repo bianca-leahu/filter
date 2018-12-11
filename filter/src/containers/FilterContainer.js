@@ -9,7 +9,7 @@ export default class FilterContainer extends Component {
 		isLoading: false
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		this.showData();
 	}
 
