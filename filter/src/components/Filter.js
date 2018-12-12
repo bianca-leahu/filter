@@ -11,7 +11,8 @@ export default class Filter extends Component {
 
     state = {
         filters: [],
-        filteredData: []
+        filteredData: [],
+        noMatch: false
     }
 
     handleInputChange = (e) => {
@@ -63,6 +64,17 @@ export default class Filter extends Component {
         const filteredData = data.slice(1).reduce((result, currentArray) => {
             return currentArray.filter((currentItem) => result.indexOf(currentItem) !== -1);
         }, data[0]);
+
+        if (filteredData && filteredData.length === 0) {
+            this.setState({
+                noMatch: true
+            })
+        }
+        else {
+            this.setState({
+                noMatch: false
+            })
+        }
     
         this.setState({
             filteredData
@@ -70,7 +82,7 @@ export default class Filter extends Component {
     }
 
     render() {
-        const { filteredData } = this.state,
+        const { filteredData, noMatch } = this.state,
             { isLoading } = this.props;
         const list = filteredData && filteredData.length ? filteredData : this.props.data;
 
@@ -119,31 +131,33 @@ export default class Filter extends Component {
                             </Input>
                         </div>
 
-                        <div className='filter-page__table d-flex'>
-                            <Table className='text-left'>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Party</th>
-                                        <th>Canton</th>
-                                        <th>Gender</th>
-                                    </tr>
-                                </thead>
-                                
-                                <tbody>
-                                    {list.map((item) =>
-                                        <tr key={item.id}>
-                                            <td>{item.id}</td>
-                                            <td className='text-muted'>{item.firstName} {item.lastName}</td>
-                                            <td>{item.party.abbreviation}</td>
-                                            <td>{item.canton.abbreviation}</td>
-                                            <td>{item.gender === 'm' ? 'Male' : 'Female'}</td>
+                        {!noMatch 
+                            ? <div className='filter-page__table d-flex'>
+                                <Table className='text-left'>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Party</th>
+                                            <th>Canton</th>
+                                            <th>Gender</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </Table>
-                        </div>
+                                    </thead>
+                                
+                                    <tbody>
+                                        {list.map((item) =>
+                                            <tr key={item.id}>
+                                                <td className='font-weight-bold'>{item.id}</td>
+                                                <td>{item.firstName} {item.lastName}</td>
+                                                <td>{item.party.abbreviation}</td>
+                                                <td>{item.canton.abbreviation}</td>
+                                                <td>{item.gender === 'm' ? 'Male' : 'Female'}</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            : <p className='font-weight-bold'>No Results Matching the Filter</p>}
                     </div>}
             </Fragment>
         );
